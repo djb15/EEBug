@@ -13,14 +13,14 @@
   #include "WProgram.h"
 #endif
 
-#include <PID.h>
+#include "PID.h"
 
 /*Constructor (...)*********************************************************
  *    The parameters specified here are those for for which we can't set up
  *    reliable defaults, so we need to have the user set them.
  ***************************************************************************/
-PID::PID(double* Input, double* Output, double* Setpoint,
-        double Kp, double Ki, double Kd, int ControllerDirection)
+PID::PID(int* Input, int* Output, int* Setpoint,
+        int Kp, int Ki, int Kd, int ControllerDirection)
 {
 
     myOutput = Output;
@@ -54,23 +54,23 @@ bool PID::Compute()
    if(timeChange>=SampleTime)
    {
       /*Compute all the working error variables*/
-	  double input = *myInput;
-      double error = *mySetpoint - input;
+	  int input = *myInput;
+      int error = *mySetpoint - input;
       ITerm+= (ki * error);
       if(ITerm > outMax) ITerm= outMax;
       else if(ITerm < outMin) ITerm= outMin;
-      double dInput = (input - lastInput);
+      int dInput = (input - lastInput);
 
       /*Compute PID Output*/
-      double output = kp * error + ITerm- kd * dInput;
+      int output = kp * error + ITerm- kd * dInput;
 
 	  if(output > outMax) output = outMax;
-      else if(output < outMin) output = outMin;
+    else if(output < outMin) output = outMin;
 	  *myOutput = output;
 
       /*Remember some variables for next time*/
-      lastInput = input;
-      lastTime = now;
+    lastInput = input;
+    lastTime = now;
 	  return true;
    }
    else return false;
@@ -82,18 +82,18 @@ bool PID::Compute()
  * it's called automatically from the constructor, but tunings can also
  * be adjusted on the fly during normal operation
  ******************************************************************************/
-void PID::SetTunings(double Kp, double Ki, double Kd)
+void PID::SetTunings(int Kp, int Ki, int Kd)
 {
    if (Kp<0 || Ki<0 || Kd<0) return;
 
    dispKp = Kp; dispKi = Ki; dispKd = Kd;
 
-   double SampleTimeInSec = ((double)SampleTime)/1000;
+   int SampleTimeInSec = ((int)SampleTime)/1000;
    kp = Kp;
    ki = Ki * SampleTimeInSec;
    kd = Kd / SampleTimeInSec;
 
-  if(controllerDirection ==REVERSE)
+  if(controllerDirection == REVERSE)
    {
       kp = (0 - kp);
       ki = (0 - ki);
@@ -124,7 +124,7 @@ void PID::SetSampleTime(int NewSampleTime)
  *  want to clamp it from 0-125.  who knows.  at any rate, that can all be done
  *  here.
  **************************************************************************/
-void PID::SetOutputLimits(double Min, double Max)
+void PID::SetOutputLimits(int Min, int Max)
 {
    if(Min >= Max) return;
    outMin = Min;
@@ -189,8 +189,8 @@ void PID::SetControllerDirection(int Direction)
  * functions query the internal state of the PID.  they're here for display
  * purposes.  this are the functions the PID Front-end uses for example
  ******************************************************************************/
-double PID::GetKp(){ return  dispKp; }
-double PID::GetKi(){ return  dispKi;}
-double PID::GetKd(){ return  dispKd;}
+int PID::GetKp(){ return  dispKp; }
+int PID::GetKi(){ return  dispKi;}
+int PID::GetKd(){ return  dispKd;}
 int PID::GetMode(){ return  inAuto ? AUTOMATIC : MANUAL;}
 int PID::GetDirection(){ return controllerDirection;}

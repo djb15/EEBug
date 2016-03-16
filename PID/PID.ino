@@ -1,32 +1,36 @@
 
-#include <PID.h>
-#define PIN_INPUT //whatever pin is the input 2, 3, 7
-#define PIN_OUTPUT //whatever pin is the output 5, 6
+#include "PID.h"
+#define RIGHT_PIN_INPUT 2
+#define LEFT_PIN_INPUT 3
+#define RIGHT_PIN_OUTPUT 0
+#define LEFT_PIN_OUTPUT 1
 
-double Setpoint, Input, Output;
+int Setpoint, right_Input, left_Input, right_Output, left_Output;
 
-double Kp = 2, Ki = 5, Kd = 1;
+int Kp = 2, Ki = 5, Kd = 1;
 
-PID myPID (&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
-
+PID myPID (&right_Input, &right_Output, &Setpoint, Kp, Ki, Kd, DIRECT);
+PID myPID2 (&left_Input, &left_Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 
 void setup() {
   // put your setup code here, to run once:
 
-  Input = analogRead (PIN_INPUT);
-  Setpoint = 100;
+  right_Input = analogRead (RIGHT_PIN_INPUT);
+  left_Input = analogRead (LEFT_PIN_INPUT);
+  
+  Setpoint = 60;
 
   myPID.SetMode (AUTOMATIC);
+  myPID2.SetMode (AUTOMATIC);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  Input = analogRead (PIN_INPUT);
+  right_Input = analogRead (RIGHT_PIN_INPUT);
+  left_Input = analogRead (LEFT_PIN_INPUT);
   myPID.Compute();
-  analogWrite (PIN_OUTPUT, Output);
-
-
-
-  
+  myPID2.Compute();
+  analogWrite (RIGHT_PIN_OUTPUT, right_Output);
+  analogWrite (LEFT_PIN_OUTPUT, left_Output);
 
 }
