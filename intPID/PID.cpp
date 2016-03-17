@@ -56,13 +56,13 @@ bool PID::Compute()
       /*Compute all the working error variables*/
 	  int input = *myInput;
       int error = *mySetpoint - input;
-      ITerm+= (ki * error);
-      if(ITerm > outMax) ITerm= outMax;
-      else if(ITerm < outMin) ITerm= outMin;
+      ITerm += (ki * error);
+      if(ITerm > outMax) ITerm = outMax;
+      else if(ITerm < outMin) ITerm = outMin;
       int dInput = (input - lastInput);
 
       /*Compute PID Output*/
-      int output = kp * error + ITerm- kd * dInput;
+      int output = kp * error + ITerm - kd * dInput;
 
 	  if(output > outMax) output = outMax;
     else if(output < outMin) output = outMin;
